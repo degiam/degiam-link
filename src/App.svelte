@@ -1,47 +1,73 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { onMount } from 'svelte';
+  import { writable, derived } from 'svelte/store';
+  import Shorten from './lib/Shorten.svelte';
+
+  const isStandalone = writable(false);
+  const isMobile = writable(false);
+
+  const updateTheme = (isDarkMode: boolean) => {
+    const classList = document.documentElement.classList;
+    if (isDarkMode && !classList.contains('dark')) {
+      classList.add('dark');
+    } else if (!isDarkMode && classList.contains('dark')) {
+      classList.remove('dark');
+    }
+  };
+
+  let themeListener: (event: MessageEvent) => void;
+  let handleScreenSizeMessage: (event: MessageEvent) => void;
+  let mediaQuery: MediaQueryList;
+
+  onMount(() => {
+    themeListener = (event: MessageEvent) => {
+      if (event.data?.type === 'theme-change') {
+        updateTheme(event.data.isDarkMode);
+      }
+    };
+    window.addEventListener('message', themeListener);
+
+    mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    updateTheme(mediaQuery.matches);
+
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      updateTheme(event.matches);
+    };
+    mediaQuery.addEventListener('change', handleMediaChange);
+
+    handleScreenSizeMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'screen-size') {
+        isStandalone.set(true);
+        isMobile.set(event.data.isMobile);
+      }
+    };
+    window.addEventListener('message', handleScreenSizeMessage);
+
+    return () => {
+      window.removeEventListener('message', themeListener);
+      window.removeEventListener('message', handleScreenSizeMessage);
+      mediaQuery.removeEventListener('change', handleMediaChange);
+    };
+  });
+
+  const mainClass = derived(
+    [isStandalone, isMobile],
+    ([$isStandalone, $isMobile]) => {
+      if ($isStandalone) {
+        return $isMobile
+          ? '[&_.main-layout]:max-md:pb-24'
+          : '[&_.main-layout]:md:pt-24';
+      }
+      return '';
+    }
+  );
 </script>
 
-<main>
-  <div class="flex justify-center gap-4 mr-8 scale-150">
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+<main class={$mainClass}>
+  <h1 class="sr-only">KieLink by Degiam</h1>
+  <Shorten />
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+  /* Add any required scoped styles here */
 </style>
