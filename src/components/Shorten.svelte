@@ -33,6 +33,7 @@
 
       const result: any = await shortenUrl(longUrl);
       if (result) {
+        console.log(result)
         const newData = {
           id: result.id,
           url: {
