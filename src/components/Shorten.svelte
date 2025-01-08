@@ -170,7 +170,7 @@
         <input type="url" bind:value={longUrl} placeholder="https://domain.com/abc/xyz" class="w-full px-4 py-3 border border-slate-300 text-black rounded-lg focus:shadow-[2px_2px_0_#22d3ee,-2px_2px_0_#22d3ee,2px_-2px_0_#22d3ee,-2px_-2px_0_#22d3ee] focus-visible:outline-none focus:border-slate-400" />
       </label>
     
-      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loadingCreate ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!bg-slate-800' : ''}`}>Generate</button>
+      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loadingCreate ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!bg-slate-800' : ''}`}>Generate</button>
     </form>
 
     {#if success}
@@ -180,7 +180,9 @@
     {/if}
 
     {#if error}
-      <p class="text-sm text-red-500 dark:text-red-600 mt-4">{error}</p>
+      <div class="mt-8 p-4 text-sm bg-red-100 text-red-700 rounded-lg">
+        <p>{error}</p>
+      </div>
     {/if}
 
     {#if loadingCreate}
@@ -326,7 +328,7 @@
           <div class="flex flex-col gap-4">
             <button
               type="button"
-              class={`w-full px-4 py-3 rounded-lg font-bold relative flex items-center justify-center gap-2 text-white bg-red-500 dark:bg-red-600 ${!loadingDelete ? 'transition hover:bg-red-600 dark:hover:bg-red-500' : 'pointer-events-none'}`}
+              class={`w-full px-4 py-3 rounded-lg font-bold relative flex items-center justify-center gap-2 text-white border border-red-500 hover:border-red-600 bg-red-500 dark:bg-red-600 ${!loadingDelete ? 'transition hover:bg-red-600 dark:hover:bg-red-500' : 'pointer-events-none'}`}
               on:click={() => handleRemove(selected)}
             >
               <span>Hapus Sekarang</span>
