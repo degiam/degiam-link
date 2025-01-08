@@ -1,8 +1,8 @@
-export async function shortenUrl(url: string): Promise<string> {
+export async function shortenUrl(longUrl: string): Promise<string> {
   const response = await fetch(`${import.meta.env.VITE_BITLY_API}/shorten`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ longUrl }),
   });
 
   const data = await response.json();
