@@ -9,7 +9,7 @@
 
   let qrcode: string | null = null;
   let popupQr: boolean = false;
-  let popupRemove: boolean = false;
+  let popupDelete: boolean = false;
   let dropdown: string | null = null;
   let dropdownRefs: { [key: string]: HTMLDivElement } = {};
   let qrcodeElement: HTMLDivElement;
@@ -17,23 +17,30 @@
   $: longUrl = '';
   $: stored = JSON.parse(localStorage.getItem(storage) || '[]');
   $: selected = '';
-  $: loading = false;
+  $: loadingCreate = false;
+  $: loadingDelete = false;
   $: error = '';
+  $: success = '';
+  $: if (success) {
+    setTimeout(() => {
+      success = '';
+    }, 3000);
+  };
 
   const handleShorten = async () => {
     try {
-      loading = true;
+      loadingCreate = true;
+      success = '';
       error = '';
 
       if (!/^(https?:\/\/(?:www\.)?[^\s$.?#].[^\s]*)$/i.test(longUrl)) {
         error = 'Masukkan URL yang valid';
-        loading = false;
+        loadingCreate = false;
         return;
       }
 
       const result: any = await shortenUrl(longUrl);
       if (result) {
-        console.log(result)
         const newData = {
           id: result.id,
           url: {
@@ -47,46 +54,50 @@
         stored = storedUpdate;
 
         longUrl = '';
+        success = 'URL dan QR Code berhasil dibuat';
       } else {
         error = 'Gagal membuat URL pendek, coba lagi nanti.';
       }
     } catch (err: any) {
       error = err.message || 'Terjadi kesalahan';
     } finally {
-      loading = false;
+      loadingCreate = false;
     }
   };
 
   const handleRemove = async (id: string) => {
     try {
-      loading = true;
+      loadingDelete = true;
+      success = '';
       error = '';
 
       const result: any = await deleteUrl(id)
       
       if (result) {
-        let stored = JSON.parse(localStorage.getItem(storage) || '[]');
         stored = stored.filter((item: any) => item.id !== id);
         localStorage.setItem(storage, JSON.stringify(stored));
-        stored = [...stored];
 
-        handlePopupRemoveClose();
+        success = 'URL dan QR Code berhasil dihapus';
       } else {
         error = 'Gagal menghapus URL pendek, coba lagi nanti.';
       }
     } catch (err: any) {
       error = err.message || 'Terjadi kesalahan';
     } finally {
-      loading = false;
+      loadingDelete = false;
+      handlePopupDeleteClose();
     }
   };
 
   const handleCopyUrl = async (url: string) => {
     try {
+      success = '';
+      error = '';
+
       await navigator.clipboard.writeText(url);
-      alert('URL berhasil disalin ke clipboard!');
+      success = 'URL berhasil disalin';
     } catch {
-      alert('Gagal menyalin URL!');
+      error = 'Gagal menyalin URL';
     }
   };
 
@@ -118,13 +129,13 @@
     popupQr = false;
   };
 
-  const handlePopupRemoveOpen = (id: string) => {
+  const handlePopupDeleteOpen = (id: string) => {
     selected = id;
-    popupRemove = true;
+    popupDelete = true;
   };
-  const handlePopupRemoveClose = () => {
+  const handlePopupDeleteClose = () => {
     selected = '';
-    popupRemove = false;
+    popupDelete = false;
   };
 
   const handleDropdown = (id: string) => {
@@ -159,14 +170,20 @@
         <input type="url" bind:value={longUrl} placeholder="https://domain.com/abc/xyz" class="w-full px-4 py-3 border border-slate-300 text-black rounded-lg focus:shadow-[2px_2px_0_#22d3ee,-2px_2px_0_#22d3ee,2px_-2px_0_#22d3ee,-2px_-2px_0_#22d3ee] focus-visible:outline-none focus:border-slate-400" />
       </label>
     
-      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loading ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!bg-slate-800' : ''}`}>Generate</button>
+      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loadingCreate ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!bg-slate-800' : ''}`}>Generate</button>
     </form>
 
-    {#if error}
-      <p class="text-red-500 dark:text-red-600 mt-4">{error}</p>
+    {#if success}
+      <div class="fixed top-0 right-0 m-4 md:m-8 px-4 py-3 md:px-5 md:py-4 rounded-lg md:rounded-xl shadow-xl bg-green-100 text-green-600">
+        {success}
+      </div>
     {/if}
 
-    {#if loading}
+    {#if error}
+      <p class="text-sm text-red-500 dark:text-red-600 mt-4">{error}</p>
+    {/if}
+
+    {#if loadingCreate}
       <div class="w-10 h-10 mx-auto mt-[2.8rem] -mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-spin text-cyan-600">
           <path fill="none" d="M0 0h24v24H0z" stroke="none" />
@@ -181,7 +198,7 @@
         <ul>
         {#each stored as item}
           <li class="flex md:items-center justify-between max-md:flex-col gap-y-3 gap-x-4 py-3 border-b border-slate-200 dark:border-slate-700 last:border-0">
-            <div class="flex flex-col gap-1 text-left">
+            <div class="flex flex-col gap-1 text-left max-w-[calc(100%-160px)]">
               <a class="hover:text-cyan-500 hover:underline transition w-fit" target="_blank" href={item.url.shorten}>{item.url.shorten}</a>
               <p class="text-xs text-slate-400 dark:text-slate-500 w-fit line-clamp-1">{item.url.original}</p>
             </div>
@@ -243,7 +260,7 @@
                       Lihat QR Code
                     </button>
                     <button
-                      on:click={() => handlePopupRemoveOpen(item.id)}
+                      on:click={() => handlePopupDeleteOpen(item.id)}
                       class="w-full whitespace-nowrap text-left px-4 py-2 text-sm text-red-500 dark:text-dark-700 hover:bg-slate-100 dark:hover:bg-slate-900/30"
                     >
                       Hapus
@@ -301,22 +318,31 @@
       </div>
     {/if}
 
-    {#if popupRemove}
+    {#if popupDelete}
       <div class="fixed inset-0 flex justify-center items-center bg-black/80 z-50">
-        <div class="flex flex-col gap-8 bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl w-full max-w-md">
+        <div class="flex flex-col gap-8 bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl w-full max-w-lg">
           <h2 class="text-2xl font-bold text-center">Yakin mau dihapus?</h2>
           <div class="text-slate-400 dark:text-slate-500">Kamu akan menghapus <pre class="text-sm bg-black/5 dark:bg-white/10 py-1 px-2 rounded-lg w-fit inline-block ml-1"><code>https://{selected}</code></pre></div>
           <div class="flex flex-col gap-4">
             <button
               type="button"
-              class="w-full px-4 py-3 rounded-lg transition font-bold text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500"
+              class={`w-full px-4 py-3 rounded-lg font-bold relative flex items-center justify-center gap-2 text-white bg-red-500 dark:bg-red-600 ${!loadingDelete ? 'transition hover:bg-red-600 dark:hover:bg-red-500' : 'pointer-events-none'}`}
               on:click={() => handleRemove(selected)}
             >
-              Hapus Sekarang
+              <span>Hapus Sekarang</span>
+              {#if loadingDelete}
+                <div class="w-8 h-8 invert brightness-0 contrast-100 -my-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full animate-spin text-cyan-600">
+                    <path fill="none" d="M0 0h24v24H0z" stroke="none" />
+                    <path opacity=".25" d="M5.636 5.636a9 9 0 1 0 12.728 12.728a9 9 0 0 0 -12.728 -12.728z" />
+                    <path d="M16.243 7.757a6 6 0 0 0 -8.486 0" />
+                  </svg>
+                </div>
+              {/if}
             </button>
             <button
               type="button"
-              on:click={handlePopupRemoveClose}
+              on:click={handlePopupDeleteClose}
               class="w-full px-4 py-3 rounded-lg transition text-slate-400 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-400 bg-slate-200 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-800"
             >
               Kembali

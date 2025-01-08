@@ -1,8 +1,8 @@
-export async function shortenUrl(longUrl: string): Promise<string> {
-  const response = await fetch(`https://degiam-backend.vercel.app/bitly/shorten`, {
+export async function shortenUrl(url: string): Promise<string> {
+  const response = await fetch(`${import.meta.env.VITE_BITLY_API}/shorten`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ longUrl }),
+    body: JSON.stringify({ url }),
   });
 
   const data = await response.json();
@@ -14,8 +14,10 @@ export async function shortenUrl(longUrl: string): Promise<string> {
 }
 
 export async function deleteUrl(id: string): Promise<boolean> {
-  const response = await fetch(`https://degiam-backend.vercel.app/bitly/delete/${id}`, {
-    method: 'DELETE',
+  const response = await fetch(`${import.meta.env.VITE_BITLY_API}/delete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
   });
 
   if (response.ok) {
