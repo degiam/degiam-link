@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable, derived } from 'svelte/store';
-  import Shorten from './lib/Shorten.svelte';
+  import Shorten from './components/Shorten.svelte';
 
   const isStandalone = writable(false);
   const isMobile = writable(false);
