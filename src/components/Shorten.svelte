@@ -3,6 +3,7 @@
   import html2canvas from 'html2canvas';
   import Brand from './Brand.svelte';
   import Built from './Built.svelte';
+	import Popover from './Popover.svelte';
   import { shortenUrl, deleteUrl } from '../lib/bitly';
 
   const storage: string = 'degiam-link';
@@ -161,7 +162,9 @@
   <div class={`w-screen max-w-lg ${stored.length < 1 ? 'mb-10 md:mb-16' : ''}`}>
 
     <div class="w-fit mx-auto mb-4">
-      <Brand />
+      <Popover content="Sulap alamat website yang super panjang menjadi singkat agar mudah dibagikan">
+        <Brand />
+      </Popover>
     </div>
 
     <form on:submit|preventDefault={handleShorten} class="flex flex-col gap-6">

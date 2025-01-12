@@ -8,7 +8,16 @@
   body {
     @apply font-sans cursor-default dark:bg-slate-900 dark:text-white;
   }
+  input, select, textarea {
+    @apply bg-white text-black placeholder:!text-zinc-400;
+  }
   img {
     @apply text-transparent;
+  }
+}
+
+@layer utilities {
+  .break-word {
+    word-break: break-word;
   }
 }
