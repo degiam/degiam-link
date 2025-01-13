@@ -177,7 +177,7 @@
     </form>
 
     {#if success}
-      <div class="fixed top-0 right-0 m-4 md:m-8 px-4 py-3 md:px-5 md:py-4 rounded-lg md:rounded-xl shadow-xl bg-green-100 text-green-600">
+      <div class="fixed top-0 right-0 m-4 md:m-8 px-4 py-3 md:px-5 md:py-4 rounded-lg md:rounded-xl shadow-xl text-sm bg-green-100 text-green-600">
         {success}
       </div>
     {/if}
