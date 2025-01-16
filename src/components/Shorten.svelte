@@ -173,7 +173,7 @@
         <input type="url" bind:value={longUrl} placeholder="https://domain.com/abc/xyz" class="w-full px-4 py-3 border border-slate-300 text-black rounded-lg focus:shadow-[2px_2px_0_#22d3ee,-2px_2px_0_#22d3ee,2px_-2px_0_#22d3ee,-2px_-2px_0_#22d3ee] focus-visible:outline-none focus:border-slate-400" />
       </label>
     
-      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loadingCreate ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!bg-slate-800' : ''}`}>Generate</button>
+      <button type="submit" class={`w-full px-4 py-3 rounded-lg transition font-bold text-white border border-cyan-500 hover:border-cyan-600 bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 ${loadingCreate ? 'pointer-events-none !text-white !bg-slate-300 dark:!text-slate-500 dark:!border-slate-800 dark:!bg-slate-800' : ''}`}>Generate</button>
     </form>
 
     {#if success}
