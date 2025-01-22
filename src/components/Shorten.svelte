@@ -4,7 +4,7 @@
   import Brand from './Brand.svelte';
   import Built from './Built.svelte';
 	import Popover from './Popover.svelte';
-  import { shortenUrl, deleteUrl } from '../lib/bitly';
+  import { shortenUrl, deleteUrl } from '../api/bitly';
 
   const storage: string = 'degiam-link';
 
