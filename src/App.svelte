@@ -55,8 +55,8 @@
     ([$isStandalone, $isMobile]) => {
       if ($isStandalone) {
         return $isMobile
-          ? '[&_.main-layout]:max-md:pb-24'
-          : '[&_.main-layout]:md:pt-24';
+          ? 'max-md:[&_.main-layout]:pb-24'
+          : 'md:[&_.main-layout]:pt-24';
       }
       return '';
     }
