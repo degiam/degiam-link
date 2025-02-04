@@ -281,7 +281,7 @@
     {/if}
 
     {#if popupQr}
-      <div class="fixed inset-0 flex justify-center items-center bg-black/80 z-50">
+      <div class="fixed inset-0 flex justify-center items-center bg-black/80 z-50 p-3">
         <div class="flex flex-col gap-4 bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl w-full max-w-md">
           {#if qrcode}
             <div class="relative mx-auto border bg-white border-slate-300 dark:border-slate-500 rounded-xl w-fit p-1">
