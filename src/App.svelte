@@ -3,7 +3,7 @@
   import { writable, derived } from 'svelte/store';
   import Shorten from './components/Shorten.svelte';
 
-  const isStandalone = writable(false);
+  const isChild = writable(false);
   const isMobile = writable(false);
 
   const updateTheme = (isDarkMode: boolean) => {
@@ -37,7 +37,7 @@
 
     handleScreenSizeMessage = (event: MessageEvent) => {
       if (event.data?.type === 'screen-size') {
-        isStandalone.set(true);
+        isChild.set(true);
         isMobile.set(event.data.isMobile);
       }
     };
@@ -51,9 +51,9 @@
   });
 
   const mainClass = derived(
-    [isStandalone, isMobile],
-    ([$isStandalone, $isMobile]) => {
-      if ($isStandalone) {
+    [isChild, isMobile],
+    ([$isChild, $isMobile]) => {
+      if ($isChild) {
         return $isMobile
           ? 'max-md:[&_.main-layout]:pb-24'
           : 'md:[&_.main-layout]:pt-24';
@@ -64,7 +64,9 @@
 </script>
 
 <main class={$mainClass}>
-  <h1 class="sr-only">KieLink by Degiam</h1>
+  {#if !$isChild}
+    <h1 class="sr-only">KieLink by Degiam</h1>
+  {/if}
   <Shorten />
 </main>
 
