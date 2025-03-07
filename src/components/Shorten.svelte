@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import html2canvas from 'html2canvas';
+  import html2canvas from 'html2canvas-pro';
   import Brand from './Brand.svelte';
   import Built from './Built.svelte';
 	import Popover from './Popover.svelte';
